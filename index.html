@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>BlogNerts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header Atas -->
+  <div id="header">
+    <button id="menuBtn">☰</button>
+    <div id="siteName">BlogNerts</div>
+  </div>
+
+  <!-- Sidebar Pengaturan -->
+  <div id="sidebar">
+    <h3>Pengaturan</h3>
+
+    <label>
+      Mode Tampilan<br>
+      <select id="themeSelect">
+        <option value="dark">Gelap (Default)</option>
+        <option value="light">Terang</option>
+      </select>
+    </label>
+
+    <label>
+      Ukuran Teks<br>
+      <select id="fontSizeSelect">
+        <option value="normal">Normal (Default)</option>
+        <option value="large">Besar</option>
+        <option value="xlarge">Ekstra Besar</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay"></div>
+
+  <!-- Kontainer Halaman -->
+  <div id="container">
+
+    <!-- Halaman Beranda -->
+    <div id="homepage">
+      <div id="homeTitle">BLOGNERTS</div>
+      <input type="text" id="searchInput" placeholder="Telusuri Blog...">
+      <div class="article-list" id="searchResults"></div>
+    </div>
+
+    <!-- Halaman Artikel -->
+    <div id="articlePage" class="hidden">
+      <div class="article" id="articleContent"></div>
+      <a href="#" class="back-link" onclick="goHome()">← Kembali ke Beranda</a>
+    </div>
+
+  </div>
+
+  <!-- Script utama -->
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,318 @@
+/* --- Reset dan dasar layout --- */
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #121212;
+  color: #eee;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* --- Header --- */
+#header {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#menuBtn {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 14px;
+  color: #fff;
+}
+
+#siteName {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* --- Kontainer Utama --- */
+#container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* --- Beranda --- */
+#homeTitle {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: inherit;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #1e1e1e;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#searchInput:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+}
+
+#searchResults {
+  margin-top: 20px;
+}
+
+/* --- Item Artikel / Pencarian --- */
+.article-list a,
+.search-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 14px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #eee;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.article-list a:hover,
+.search-item:hover {
+  background: #2a2a2a;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.search-item img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.search-text {
+  flex: 1;
+}
+
+.search-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.search-description {
+  font-size: 14px;
+  color: #bbb;
+}
+
+/* --- Halaman Artikel --- */
+#articlePage {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+#articlePage.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+#articlePage.hidden {
+  display: none;
+}
+
+a.back-link {
+  display: inline-block;
+  margin-top: 30px;
+  color: #66b3ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* --- Sidebar & Overlay --- */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 1000;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 240px;
+  height: 100%;
+  background: #1e1e1e;
+  color: #fff;
+  border-right: 1px solid #444;
+  padding: 24px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+  transition: left 0.3s ease;
+  z-index: 1001;
+}
+
+#sidebar.active {
+  left: 0;
+}
+
+/* --- Pengaturan Switch --- */
+.theme-switch {
+  margin-top: 24px;
+  font-size: 14px;
+}
+
+.theme-switch label {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.theme-switch input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* --- Light Mode --- */
+body.light-mode {
+  background-color: #fdfdfd;
+  color: #222;
+}
+
+body.light-mode #header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #ccc;
+}
+
+body.light-mode #siteName,
+body.light-mode #menuBtn {
+  color: #222;
+}
+
+body.light-mode #searchInput {
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+body.light-mode .article-list a,
+body.light-mode .search-item {
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+}
+
+body.light-mode .search-item:hover,
+body.light-mode .article-list a:hover {
+  background: #f5f5f5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+body.light-mode .search-description {
+  color: #555;
+}
+
+body.light-mode #sidebar {
+  background-color: #f9f9f9;
+  color: #222;
+  border-right: 1px solid #ccc;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+body.light-mode .notif-switch select {
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+}
+
+.font-switch {
+  margin-top: 24px;
+  font-size: 14px;
+}
+
+.font-switch select {
+  margin-top: 8px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #1e1e1e;
+  color: #eee;
+}
+
+body.light-mode,
+body.light-mode .font-switch select {
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+}
+
+/* --- Utility --- */
+.hidden {
+  display: none;
+}
+
+/* --- Animasi hasil pencarian --- */
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-item {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: slideFadeIn 0.4s ease forwards;
+}
+
+.search-item.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#searchInput.error {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.3);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.theme-switch select {
+  margin-top: 8px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #1e1e1e;
+  color: #eee;
+}
+
+body.light-mode .theme-switch select {
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+}
