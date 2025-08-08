@@ -1,38 +1,379 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Login & Editor Artikel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-  <link rel="stylesheet" href="edit.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-</head>
-<body>
-  <div class="container">
-    <div id="login-box" class="login-box">
-      <h2>Login Admin</h2>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Masuk</button>
-    </div>
-    <div id="editor-section">
-      <h2>Editor Artikel</h2>
-      <input type="text" id="titleInput" placeholder="Judul artikel..." />
-      <div id="editor-container"></div>
-      <button id="saveBtn">Simpan Artikel</button>
-      <button id="copyBtn">Salin Teks</button>
-      <button id="previewBtn">Preview</button>
-      <div id="livePreview"></div>
-      <div id="customLinkForm">
-        <input type="text" id="customLinkURL" placeholder="Masukkan URL (https://...)" />
-        <input type="text" id="customLinkText" placeholder="Nama tampilan (contoh: Kunjungi Situs)" />
-        <button id="addLinkBtn">Tambahkan ke Editor</button>
-        <button id="cancelLinkBtn">Batal</button>
-      </div>
-    </div>
+<!DOCTYPE html><html lang="id">  <head>  
+  <meta charset="UTF-8">  
+  <title>Login & Editor Artikel</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>  
+  <style>  
+    * { box-sizing: border-box; }  
+    body {  
+      background: #121212;  
+      color: white;  
+      font-family: sans-serif;  
+      margin: 0;  
+      padding: 0;  
+      overflow-x: hidden;  
+    }  
+    .container {  
+      max-width: 600px;  
+      margin: 0 auto;  
+      padding: 20px;  
+    }  
+    .login-box {  
+      background: #1e1e1e;  
+      padding: 30px;  
+      border-radius: 8px;  
+      border: 1px solid #444;  
+      margin-top: 100px;  
+    }  
+    .login-box h2 {  
+      text-align: center;  
+      margin-bottom: 20px;  
+    }  
+    .login-box input,  
+    .login-box button {  
+      width: 100%;  
+      padding: 12px;  
+      margin-bottom: 12px;  
+      border-radius: 6px;  
+      border: 1px solid #555;  
+    }  
+    .login-box input {  
+      background: #121212;  
+      color: white;  
+    }  
+    .login-box button {  
+      background: #007bff;  
+      border: none;  
+      color: white;  
+      cursor: pointer;  
+    }  
+    #editor-section { display: none; }  
+    #titleInput {  
+      width: 100%;  
+      padding: 12px;  
+      margin-bottom: 10px;  
+      font-size: 16px;  
+      border-radius: 6px;  
+      border: 1px solid #444;  
+      background: #1e1e1e;  
+      color: white;  
+    }  
+    #editor-container {  
+      height: 300px;  
+      background: #000;  
+      color: white;  
+      border: 1px solid #444;  
+      margin-bottom: 20px;  
+    }  
+    .ql-toolbar {  
+      background-color: #1e1e1e;  
+      border: 1px solid #444;  
+      border-bottom: none;  
+    }  
+    .ql-toolbar button,  
+    .ql-toolbar .ql-picker {  
+      color: white !important;  
+    }  
+    .ql-editor {  
+      color: white;  
+      overflow-x: hidden;  
+      word-break: break-word;  
+      white-space: pre-wrap;  
+      max-width: 100%;  
+    }  
+    .ql-editor:empty::before {  
+      content: "Tulis sesuatu...";  
+      color: #888;  
+    }  
+    #saveBtn {  
+      background: #007bff;  
+      color: white;  
+    }  
+    #copyBtn {  
+      background: #28a745;  
+      color: white;  
+      margin-left: 10px;  
+    }  
+    #previewBtn {  
+      background: #ffc107;  
+      color: black;  
+      margin-left: 10px;  
+    }  
+    #livePreview {  
+      margin-top: 20px;  
+      padding: 20px;  
+      background: #000;  
+      border: 1px solid #444;  
+      border-radius: 6px;  
+      color: white;  
+      display: none;  
+    }  
+    .ql-picker-label,  
+    .ql-picker-options {  
+      background-color: #000 !important;  
+      color: white !important;  
+      border: 1px solid #444;  
+    }  
+    #customLinkForm {  
+      display: none;  
+      position: absolute;  
+      background: #1e1e1e;  
+      padding: 12px;  
+      border: 1px solid #444;  
+      border-radius: 6px;  
+      z-index: 999;  
+    }  
+    #customLinkForm input {  
+      width: 100%;  
+      padding: 10px;  
+      margin-bottom: 8px;  
+      border-radius: 6px;  
+      border: 1px solid #444;  
+      background: #1e1e1e;  
+      color: white;  
+    }  
+    #livePreview img {  
+      max-width: 100%;  
+      height: auto;  
+      display: block;  
+      margin: 10px 0;  
+    }  
+    #livePreview {  
+      background: #000;  
+      border: 1px solid #444;  
+      border-radius: 6px;  
+      color: white;  
+      padding: 20px;  
+      margin-top: 20px;  
+      white-space: pre-wrap;  
+      word-break: break-word;  
+      overflow-wrap: break-word;  
+      font-family: inherit;  
+    }  #livePreview * {  
+  color: white;  
+}  
+  
+#livePreview h1,  
+#livePreview h2,  
+#livePreview h3,  
+#livePreview h4,  
+#livePreview h5 {  
+  color: white;  
+}  
+  
+#livePreview img {  
+  max-width: 100%;  
+  height: auto;  
+  display: block;  
+  margin: 10px 0;  
+}  
+  
+#livePreview a {  
+  color: #0af;  
+  text-decoration: underline;  
+}
+
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <div id="login-box" class="login-box">  
+      <h2>Login Admin</h2>  
+      <input type="text" id="username" placeholder="Username" />  
+      <input type="password" id="password" placeholder="Password" />  
+      <button onclick="login()">Masuk</button>  
+    </div>  
+    <div id="editor-section">  
+  <h2>Editor Artikel</h2>  
+  <input type="text" id="titleInput" placeholder="Judul artikel..." />  
+  <div id="editor-container"></div>  
+  <button id="saveBtn">Simpan Artikel</button>  
+  <button id="copyBtn">Salin Teks</button>  
+  <button id="previewBtn">Preview</button>  
+  <div id="livePreview"></div>  
+  <div id="customLinkForm">  
+    <input type="text" id="customLinkURL" placeholder="Masukkan URL (https://...)" />  
+    <input type="text" id="customLinkText" placeholder="Nama tampilan (contoh: Kunjungi Situs)" />  
+    <button id="addLinkBtn">Tambahkan ke Editor</button>  
+    <button id="cancelLinkBtn">Batal</button>  
   </div>  
-  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-  <script type="module" src="edit.js"></script>
-</body>
-</html>
+</div>    </div>    
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>  
+  <script type="module">  
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";  
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";  const firebaseConfig = {
+apiKey: "AIzaSyCioXkddP8t8EbR0ayetCcJy9d-RRVPlZE",
+authDomain: "blognerts.firebaseapp.com",
+projectId: "blognerts",
+storageBucket: "blognerts.firebasestorage.app",
+messagingSenderId: "395665771531",
+appId: "1:395665771531:web:49a8dbf9379cb2df6d4b0e",
+measurementId: "G-43CFW5FB41"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const quill = new Quill("#editor-container", {
+theme: "snow",
+modules: {
+toolbar: [['bold', 'italic', 'underline'], ['link', 'image'], [{ header: [1, 2, 3, false] }]]
+}
+});
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+const title = document.getElementById("titleInput").value.trim();
+const content = quill.root.innerHTML;
+
+if (!title || content.trim() === "<p><br></p>") {  
+  alert("Judul dan konten tidak boleh kosong.");  
+  return;  
+}  
+
+const plainText = quill.getText().slice(0, 60) + "...";  
+const image = "https://via.placeholder.com/50x50?text=" + encodeURIComponent(title);  
+
+try {  
+  await addDoc(collection(db, "articles"), {  
+    title,  
+    content,  
+    description: plainText,  
+    image,  
+    createdAt: Date.now()  
+  });  
+  alert("✅ Artikel berhasil disimpan!");  
+} catch (e) {  
+  alert("❌ Gagal menyimpan artikel: " + e.message);  
+}
+
+});
+
+  <script>  
+    const ADMIN_USERNAME = "admin";  
+    const ADMIN_HASHED_PASSWORD = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // SHA256 dari 123456  
+  
+    function login() {  
+      const u = document.getElementById("username").value.trim();  
+      const p = document.getElementById("password").value;  
+      const hashed = CryptoJS.SHA256(p).toString();  
+  
+      if (u === ADMIN_USERNAME && hashed === ADMIN_HASHED_PASSWORD) {  
+        document.getElementById("login-box").style.display = "none";  
+        document.getElementById("editor-section").style.display = "block";  
+      } else {  
+        alert("Username atau password salah!");  
+      }  
+    }  
+  
+    document.addEventListener("DOMContentLoaded", () => {  
+      const quill = new Quill("#editor-container", {  
+        theme: "snow",  
+        modules: {  
+          toolbar: [  
+            [{ header: [1, 2, false] }],  
+            ["bold", "italic", "underline"],  
+            [{ color: [] }],  
+            [{ align: [] }],  
+            ["link", "image"]  
+          ]  
+        }  
+      });  
+    
+      document.getElementById("saveBtn").onclick = () => {  
+        const title = document.getElementById("titleInput").value.trim();  
+        const content = quill.root.innerHTML;  
+    
+        if (!title || content.trim() === "<p><br></p>") {  
+          alert("Judul dan isi artikel tidak boleh kosong!");  
+          return;  
+        }  
+    
+        const existing = JSON.parse(localStorage.getItem("customArticles") || "[]");  
+        const newArticle = {  
+          title,  
+          description: content.replace(/<[^>]+>/g, "").slice(0, 60) + "...",  
+          content,  
+          image: "https://via.placeholder.com/50x50?text=" + encodeURIComponent(title)  
+        };  
+    
+        const updated = existing.filter(a => a.title !== title);  
+        updated.unshift(newArticle);  
+        localStorage.setItem("customArticles", JSON.stringify(updated));  
+        alert("Artikel berhasil disimpan!");  
+      };  
+    });  
+    
+    document.getElementById("copyBtn").onclick = () => {  
+      const tempDiv = document.createElement("div");  
+      tempDiv.innerHTML = quill.root.innerHTML;  
+      const txt = tempDiv.innerText;  
+      navigator.clipboard.writeText(txt).then(() => alert("Teks berhasil disalin!"));  
+    };  
+  
+    document.getElementById("previewBtn").onclick = () => {  
+      const box = document.getElementById("livePreview");  
+      
+      if (box.style.display === "block") {  
+        box.style.display = "none"; // Sembunyikan jika sudah tampil  
+        return;  
+      }  
+      
+      const title = document.getElementById("titleInput").value.trim();  
+      const content = quill.root.innerHTML;  
+      
+      if (!title || content.trim() === "<p><br></p>") {  
+        alert("Judul dan isi artikel tidak boleh kosong!");  
+        return;  
+      }  
+      
+      box.innerHTML = `<h3>${title}</h3>${content}`;  
+      box.classList.add("ql-editor"); // Supaya tampilannya sama seperti editor  
+      box.style.display = "block";  
+    };  
+  
+    document.querySelector(".ql-link#ff9958").addEventListener("click", function (e) {  
+      e.preventDefault();  
+      const toolbar = document.querySelector(".ql-toolbar");  
+      const form = document.getElementById("customLinkForm");  
+      const editorContainer = document.getElementById("editor-container");  
+      
+      // Jika sudah tampil, sembunyikan  
+      if (form.style.display === "block") {  
+        form.style.display = "none";  
+        return;  
+      }  
+      
+      // Kalau belum tampil, tampilkan  
+      const rect = editorContainer.getBoundingClientRect();  
+      form.style.top = toolbar.getBoundingClientRect().bottom + window.scrollY + "px";  
+      form.style.left = rect.left + "px";  
+      form.style.width = rect.width + "px";  
+      form.style.display = "block";  
+      
+      document.getElementById("customLinkURL").focus();  
+    });  
+  
+    document.getElementById("addLinkBtn").addEventListener("click", function () {  
+      const url = document.getElementById("customLinkURL").value.trim();  
+      const name = document.getElementById("customLinkText").value.trim();  
+  
+      if (!url || !name) {  
+        alert("Isi URL dan Nama Tampilan dulu.");  
+        return;  
+      }  
+  
+      const range = quill.getSelection(true);  
+      quill.insertText(range.index, name, { link: url });  
+      quill.setSelection(range.index + name.length);  
+  
+      document.getElementById("customLinkURL").value = "";  
+      document.getElementById("customLinkText").value = "";  
+      document.getElementById("customLinkForm").style.display = "none";  
+    });  
+  
+    document.getElementById("cancelLinkBtn").addEventListener("click", function () {  
+      document.getElementById("customLinkForm").style.display = "none";  
+    });  
+  </script></body>  </html>  pisahkan
+
