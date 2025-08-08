@@ -14,7 +14,6 @@
       font-family: sans-serif;
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
     }
     .container {
       max-width: 600px;
@@ -88,7 +87,6 @@
       content: "Tulis sesuatu...";
       color: #888;
     }
-
     #saveBtn, #copyBtn, #previewBtn,
     #addLinkBtn, #cancelLinkBtn {
       padding: 10px 15px;
@@ -98,13 +96,11 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     #saveBtn { background: #007bff; color: white; }
     #copyBtn { background: #28a745; color: white; }
     #previewBtn { background: #ffc107; color: black; }
     #addLinkBtn { background: #28a745; color: white; }
     #cancelLinkBtn { background: #dc3545; color: white; }
-
     #livePreview {
       margin-top: 20px;
       padding: 20px;
@@ -114,7 +110,6 @@
       color: white;
       display: none;
     }
-
     #customLinkForm {
       display: none;
       background: #1e1e1e;
@@ -123,7 +118,6 @@
       border-radius: 6px;
       margin-bottom: 20px;
     }
-
     #customLinkForm input {
       width: 100%;
       padding: 10px;
@@ -165,11 +159,27 @@
   </div>
 
   <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-  <script>
-    const ADMIN_USERNAME = "admin";
-    const ADMIN_HASHED_PASSWORD = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // '123456'
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    function login() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyCioXkddP8t8EbR0ayetCcJy9d-RRVPlZE",
+      authDomain: "blognerts.firebaseapp.com",
+      projectId: "blognerts",
+      storageBucket: "blognerts.firebasestorage.app",
+      messagingSenderId: "395665771531",
+      appId: "1:395665771531:web:49a8dbf9379cb2df6d4b0e",
+      measurementId: "G-43CFW5FB41"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_HASHED_PASSWORD = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // SHA256 dari '123456'
+
+    window.login = function () {
       const u = document.getElementById("username").value.trim();
       const p = document.getElementById("password").value;
       const hashed = CryptoJS.SHA256(p).toString();
@@ -194,17 +204,13 @@
           ],
           handlers: {
             link: function () {
-              toggleLinkForm();
+              const form = document.getElementById("customLinkForm");
+              form.style.display = (form.style.display === "block") ? "none" : "block";
             }
           }
         }
       }
     });
-
-    function toggleLinkForm() {
-      const form = document.getElementById("customLinkForm");
-      form.style.display = (form.style.display === "block") ? "none" : "block";
-    }
 
     document.getElementById("addLinkBtn").addEventListener("click", function () {
       const url = document.getElementById("customLinkURL").value.trim();
@@ -228,25 +234,39 @@
       document.getElementById("customLinkForm").style.display = "none";
     });
 
-    document.getElementById("saveBtn").onclick = () => {
+    document.getElementById("saveBtn").addEventListener("click", async () => {
       const title = document.getElementById("titleInput").value.trim();
       const content = quill.root.innerHTML;
+
       if (!title || content.trim() === "<p><br></p>") {
         alert("Judul dan isi artikel tidak boleh kosong!");
         return;
       }
-      alert("Artikel disimpan ke localStorage!");
-    };
 
-    document.getElementById("copyBtn").onclick = () => {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = quill.root.innerHTML;
-      const txt = tempDiv.innerText;
+      const plainText = quill.getText().slice(0, 60) + "...";
+      const image = "https://via.placeholder.com/50x50?text=" + encodeURIComponent(title);
+
+      try {
+        await addDoc(collection(db, "articles"), {
+          title,
+          content,
+          description: plainText,
+          image,
+          createdAt: Date.now()
+        });
+        alert("✅ Artikel berhasil disimpan!");
+      } catch (e) {
+        alert("❌ Gagal menyimpan artikel: " + e.message);
+      }
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", () => {
+      const txt = quill.getText();
       navigator.clipboard.writeText(txt).then(() => alert("Teks berhasil disalin!"));
-    };
+    });
 
     let isPreviewShown = false;
-    document.getElementById("previewBtn").onclick = () => {
+    document.getElementById("previewBtn").addEventListener("click", () => {
       const title = document.getElementById("titleInput").value.trim();
       const content = quill.root.innerHTML;
       const box = document.getElementById("livePreview");
@@ -264,7 +284,7 @@
         box.style.display = "none";
         isPreviewShown = false;
       }
-    };
+    });
   </script>
 </body>
 </html>
