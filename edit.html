@@ -135,16 +135,23 @@
       background: #1e1e1e;
       color: white;
     }
-    #customLinkForm button {
-      width: 49%;
-      padding: 10px;
-      margin-right: 1%;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-    }
-    #addLinkBtn { background: #28a745; color: white; }
-    #cancelLinkBtn { background: #dc3545; color: white; }
+#customLinkForm button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+#addLinkBtn {
+  background: #28a745;
+  color: white;
+}
+
+#cancelLinkBtn {
+  background: #dc3545;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -273,17 +280,26 @@
       navigator.clipboard.writeText(txt).then(() => alert("Teks berhasil disalin!"));
     };
 
-    document.getElementById("previewBtn").onclick = () => {
-      const title = document.getElementById("titleInput").value.trim();
-      const content = quill.root.innerHTML;
-      if (!title || content.trim() === "<p><br></p>") {
-        alert("Judul dan isi artikel tidak boleh kosong!");
-        return;
-      }
-      const box = document.getElementById("livePreview");
-      box.innerHTML = `<h3>${title}</h3>${content}`;
-      box.style.display = "block";
-    };
+let isPreviewShown = false;
+
+document.getElementById("previewBtn").onclick = () => {
+  const title = document.getElementById("titleInput").value.trim();
+  const content = quill.root.innerHTML;
+  const box = document.getElementById("livePreview");
+
+  if (!isPreviewShown) {
+    if (!title || content.trim() === "<p><br></p>") {
+      alert("Judul dan isi artikel tidak boleh kosong!");
+      return;
+    }
+    box.innerHTML = `<h3>${title}</h3>${content}`;
+    box.style.display = "block";
+    isPreviewShown = true;
+  } else {
+    box.style.display = "none";
+    isPreviewShown = false;
+  }
+};
   </script>
 </body>
 </html>
